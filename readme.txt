@@ -1,5 +1,6 @@
 === Feedback Fish ===
 Contributors: mxstbr
+Tested up to: 5.5.1
 License: Expat
 License URI: https://directory.fsf.org/wiki/License:Expat
 

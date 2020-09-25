@@ -44,7 +44,10 @@ add_filter(
 function add_feedback_fish_nav_menu_item($items, $args)
 {
     $current_user = wp_get_current_user();
-    $items .= "<li class=\"menu-item\"><a href=\"#\" data-feedback-fish-userid=\"$current_user->user_email\" data-feedback-fish>Send feedback</a></li>";
+    $manual_usage = get_option('feedback_fish_manual');
+    if (!$manual_usage) {
+        $items .= "<li class=\"menu-item\"><a href=\"#\" data-feedback-fish-userid=\"$current_user->user_email\" data-feedback-fish>Send feedback</a></li>";
+    }
     return $items;
 }
 add_filter('wp_nav_menu_items', 'add_feedback_fish_nav_menu_item', 10, 2);
@@ -103,22 +106,38 @@ function setup_feeback_fish_settings_fields()
     add_settings_field(
         'feedback_fish_project_id',
         'Project ID',
-        'feedback_fish_settings_field_callback',
+        'feedback_fish_project_id_field',
+        'feedback_fish',
+        'feedback_fish_general'
+    );
+    add_settings_field(
+        'feedback_fish_manual',
+        'Manual Usage (advanced)',
+        'feedback_fish_manual_field',
         'feedback_fish',
         'feedback_fish_general'
     );
     register_setting('feedback_fish', 'feedback_fish_project_id');
+    register_setting('feedback_fish', 'feedback_fish_manual');
 }
 
-function feedback_fish_settings_field_callback()
+function feedback_fish_manual_field()
+{
+    echo '<label><input name="feedback_fish_manual" id="feedback_fish_manual" type="checkbox" value="1"' .
+        checked(1, get_option('feedback_fish_manual'), false) .
+        ' /> I will add the <code>data-feedback-fish</code> HTML attribute myself.</label>';
+    echo "<p class=\"description\">Enabling this stops the plugin from adding a \"Send feedback\" button to your primary navigation. See the <a href=\"https://feedback.fish/help/widget/\" target=\"_blank\">documentation</a> for more information on the HTML attribute.</p>";
+}
+
+function feedback_fish_project_id_field()
 {
     echo '<input name="feedback_fish_project_id" id="feedback_fish_project_id" type="text" value="' .
         get_option('feedback_fish_project_id') .
         '" />';
+    echo '<p class="description">You can get your project ID from <a href=\"https://feedback.fish/app\" target=\"_blank\">your Feedback Fish dashboard</a>.</p>';
 }
 
 function feedback_fish_settings_page_section_callback()
 {
-    echo "You can get your project ID from <a href=\"https://feedback.fish/app\" target=\"_blank\">your Feedback Fish dashboard</a>!";
 }
 ?>
