@@ -14,14 +14,16 @@
 function enqueue_feedback_fish_script()
 {
     $projectId = get_option('feedback_fish_project_id');
-    wp_register_script(
-        'feedback-fish',
-        "https://feedback.fish/ff.js?pid=$projectId",
-        [],
-        null,
-        true
-    );
-    wp_enqueue_script('feedback-fish');
+    if (!empty($projectId)) {
+        wp_register_script(
+            'feedback-fish',
+            "https://feedback.fish/ff.js?pid=$projectId",
+            [],
+            null,
+            true
+        );
+        wp_enqueue_script('feedback-fish');
+    }
 }
 add_action('wp_enqueue_scripts', 'enqueue_feedback_fish_script');
 
