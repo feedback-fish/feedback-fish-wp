@@ -23,7 +23,7 @@ You can find your Feedback Fish project ID on your [Feedback Fish dashboard](htt
 
 = How can I manually place the "Send Feedback" button? =
 
-You can use the "Manual Usage" option in the plugin settings and the `data-feedback-fish` HTML attribute to trigger the widget on any button you want!
+To trigger the widget on a button of your choice, add the `data-feedback-fish` HTML attribute to it! See [the documentation](https://feedback.fish/help/widget) for more information.
 
 == Screenshots ==
 
