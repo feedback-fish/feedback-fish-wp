@@ -46,8 +46,12 @@ add_filter(
 function add_feedback_fish_nav_menu_item($items, $args)
 {
     $current_user = wp_get_current_user();
-    $manual_usage = get_option('feedback_fish_manual');
-    if (!$manual_usage) {
+    $assigned_menu_slug = get_option('feedback_fish_selected_menu', 0);
+
+    if (
+        !empty($assigned_menu_slug) &&
+        $args->menu->slug === $assigned_menu_slug
+    ) {
         $items .= "<li class=\"menu-item\"><a href=\"#\" data-feedback-fish-userid=\"$current_user->user_email\" data-feedback-fish>Send feedback</a></li>";
     }
     return $items;
@@ -113,22 +117,31 @@ function setup_feeback_fish_settings_fields()
         'feedback_fish_general'
     );
     add_settings_field(
-        'feedback_fish_manual',
-        'Manual Usage (advanced)',
-        'feedback_fish_manual_field',
+        'feedback_fish_selected_menu',
+        'Assigned Menu',
+        'feedback_fish_selected_menu_field',
         'feedback_fish',
         'feedback_fish_general'
     );
     register_setting('feedback_fish', 'feedback_fish_project_id');
-    register_setting('feedback_fish', 'feedback_fish_manual');
+    register_setting('feedback_fish', 'feedback_fish_selected_menu');
 }
 
-function feedback_fish_manual_field()
+function feedback_fish_selected_menu_field()
 {
-    echo '<label><input name="feedback_fish_manual" id="feedback_fish_manual" type="checkbox" value="1"' .
-        checked(1, get_option('feedback_fish_manual'), false) .
-        ' /> I will add the <code>data-feedback-fish</code> HTML attribute myself.</label>';
-    echo "<p class=\"description\">Enabling this stops the plugin from adding a \"Send feedback\" button to your primary navigation. See the <a href=\"https://feedback.fish/help/widget/\" target=\"_blank\">documentation</a> for more information on the HTML attribute.</p>";
+    $menus = wp_get_nav_menus();
+    $selected_menu = get_option('feedback_fish_selected_menu');
+
+    echo "<select name=\"feedback_fish_selected_menu\" id=\"feedback_fish_selected_menu\">";
+    echo "<option value=\"\">No menu (manual)</option>";
+    foreach ($menus as $menu) {
+        echo "<option value=\"$menu->slug\"" .
+            selected($selected_menu, $menu->slug, false) .
+            ">$menu->name</option>";
+    }
+
+    echo "</select>";
+    echo "<p class=\"description\">The plugin will add a \"Send feedback\" button to the menu you select here. If you do not select a menu, you have to add the <code>data-feedback-fish</code> HTML attribute to a button of your choice yourself. (learn more about manual usage in <a href=\"https://feedback.fish/help/widget/\" target=\"_blank\">the documentation</a>)</p>";
 }
 
 function feedback_fish_project_id_field()
